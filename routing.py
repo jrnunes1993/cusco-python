@@ -1,4 +1,3 @@
-from matplotlib.pyplot import grid
 from z3 import *
 
 
@@ -41,18 +40,12 @@ class Grid:
         
         return
 
-p = Grid('M1', 5, 5)
 
 
-p.print()
+def estimateGrid(listPCirc, listNCirc):
+    
+    return
 
-p.increase_x(5)
 
-p.occupy_point(6,2)
-p.occupy_point(3,1)
-p.occupy_point(0,4)
-
-p.print()
-print(p.grid)
 
 
