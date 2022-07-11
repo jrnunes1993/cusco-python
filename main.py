@@ -17,8 +17,11 @@ for item in nets:
     for nitem in nc:
         print(nitem)
         
-    print(rt.estimateGrid(pc,nc))
-    rt.createGridTransistors()
+    col, row = rt.estimateGrid(pc,nc)
+        
+    print(col, row)
+    grRX, grCA, grPoly = rt.createGridTransistors('RX', 'CA', 'POLY', col, row, pc, nc)
+    
     print('-----------------------------------------------')
 
 

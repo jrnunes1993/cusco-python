@@ -7,8 +7,9 @@ def read_netlist(filename):     # Função que faz a leitura do arquivo e retorn
     circlist = []
     
     for line in f:
-        circ = line.split()
-        circlist.append(Device(circ[0],circ[1],circ[2],circ[3]))       # Cria lista do objeto transistor conforme a descrição da net 
+        if line != '\n':
+            circ = line.split()
+            circlist.append(Device(circ[0],circ[1],circ[2],circ[3]))       # Cria lista do objeto transistor conforme a descrição da net 
     
     return circlist
 
