@@ -3,27 +3,26 @@ import placement as pl
 import toolutils as ut
 import routing as rt
 
+nets = ["netlist.txt", "new_net.txt", "a.txt"]
+layers = ['M1', 'CA', 'RX', 'POLY']
 
-circuit = ut.read_netlist("netlist.txt")
-pc, nc = pl.placement(circuit)
-for pitem in pc:
-    print(pitem)
+
+for item in nets:
+    circuit, nc, pc = [], [], []
+    circuit = ut.read_netlist(item)
+    pc, nc = pl.placement(circuit)
     
-for nitem in nc:
-    print(nitem)
-    
-number_of_transistors = len(circuit)
-print('-----------------------------------------------')
+    for pitem in pc:
+        print(pitem)        
+    for nitem in nc:
+        print(nitem)
+        
+    print(rt.estimateGrid(pc,nc))
+    rt.createGridTransistors()
+    print('-----------------------------------------------')
 
-circuit = ut.read_netlist("new_net.txt")
-pl.placement(circuit)
-number_of_transistors = len(circuit)
-print('-----------------------------------------------')
 
-circuit = ut.read_netlist("a.txt")
-pl.placement(circuit)
-number_of_transistors = len(circuit)
-print('-----------------------------------------------')
+
 
 
         

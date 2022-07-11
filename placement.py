@@ -16,7 +16,7 @@ def placement(circuit):         # Função que faz o posicionamento de transisto
         if inst.rtype == 'nmos': 
             nmos_counter += 1
             ncirc.append(inst)
-        print(inst)
+        #print(inst)
             
     print('Pmos: ' + str(pmos_counter) + ' Nmos: ' + str(nmos_counter))
         
@@ -25,11 +25,11 @@ def placement(circuit):         # Função que faz o posicionamento de transisto
         if pmos_counter>nmos_counter:           # Caso a rede seja desbalanceada, são criados dispositivos "dummy" e inseridos na rede com menos dispositivos
             while pmos_counter>nmos_counter:    
                 nmos_counter +=1                # Se aumenta a contagem de dispositivos da menor rede até que ela tenha o mesmo tamanho da maior
-                ncirc.append(Device(0,0,0,0))   # A igualdade de dispositivos, com inserção de dummies, é necessária para o alinhamento dos gates posteriormente
+                ncirc.append(Device(0,0,0,rtype='nmos'))   # A igualdade de dispositivos, com inserção de dummies, é necessária para o alinhamento dos gates posteriormente
         else:
             while nmos_counter>pmos_counter:
                 pmos_counter +=1
-                pcirc.append(Device(0,0,0,0))
+                pcirc.append(Device(0,0,0,rtype='pmos'))
     else:  
         print('Balanced net')
 
@@ -116,8 +116,8 @@ def placement(circuit):         # Função que faz o posicionamento de transisto
             return pcirc, ncirc
 
         else:   # Caso não exista solução, adiciona 1 dispositivo dummy nas redes pmos e nmos, inserindo artificialmente uma quebra de difusão. As quebras são inseridas até que exista uma solução
-            pcirc.append(Device(0,0,0,0))
-            ncirc.append(Device(0,0,0,0))
+            pcirc.append(Device(0,0,0,rtype='pmos'))
+            ncirc.append(Device(0,0,0,rtype='nmos'))
             nmos_counter +=1
             pmos_counter +=1
             spaces_counter +=1
