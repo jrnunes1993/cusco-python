@@ -73,16 +73,38 @@ def estimateGrid(listPCirc, listNCirc):
     count_row = bandw if bandw >= min_bandwidth else min_bandwidth
     
     
-
     return count_col, count_row
 
-
+def POLYfill(grPOLY, pcirc, ncirc):
+    #if len(pcirc)!=len(ncirc):
+    #    print('Erro estranho kkk')
+    #    return
+    
+    for idx in range(len(ncirc)):
+        points = []
+        if ncirc[idx].gate == pcirc[idx].gate and ncirc[idx].gate != 0 and pcirc[idx].gate != 0:
+            for y in range(P_REGION+N_REGION+MID_REGION):
+                points.append([(ncirc[idx].position*2)+2, y+VDD_REGION])
+        else:
+            if ncirc[idx].gate != 0:
+                for y in range(N_REGION):
+                    points.append([(ncirc[idx].position*2)+2, y+VDD_REGION+P_REGION+MID_REGION])
+            if pcirc[idx].gate != 0:
+                for y in range(P_REGION):
+                    points.append([(pcirc[idx].position*2)+2, y+VDD_REGION])
+            
+        grPOLY.occupy_points(points)
+        
+            
+    grPOLY.print()
+    
+    
 
 def RXfill(grRX, pcirc, ncirc):
     
-    if len(pcirc)!=len(ncirc):
-        print('Erro estranho kkk')
-        return
+    #if len(pcirc)!=len(ncirc):
+    #    print('Erro estranho kkk')
+    #    return
     p_max_pos = 0
     n_max_pos = 0
     idx_p_max = 0
@@ -91,11 +113,8 @@ def RXfill(grRX, pcirc, ncirc):
     for idx in range(len(pcirc)):
         points = []  
         
-        if pcirc[idx].position == len(pcirc)-1:
-            idx_p_max = idx
-            
-        if ncirc[idx].position == len(ncirc)-1:
-            idx_n_max = idx
+        idx_p_max = len(pcirc)-1
+        idx_n_max = len(pcirc)-1
         
         print(p_max_pos, n_max_pos)
         
@@ -104,9 +123,7 @@ def RXfill(grRX, pcirc, ncirc):
             for x in range(1,3):
                 for y in range(P_REGION):
                     points.append([(pcirc[idx].position*2)+x, y+VDD_REGION])
-                    pass
             grRX.occupy_points(points)
-            pass
         else:
             if grRX.grid[pcirc[idx].position*2][VDD_REGION] != 0:
                 for y in range(P_REGION):
@@ -119,9 +136,7 @@ def RXfill(grRX, pcirc, ncirc):
             for x in range(1,3):
                 for y in range(N_REGION):
                     points.append([(ncirc[idx].position*2)+x, y+MID_REGION+P_REGION+VDD_REGION])
-                    pass
             grRX.occupy_points(points)
-            pass
         else:
             if grRX.grid[ncirc[idx].position*2][MID_REGION+P_REGION+VDD_REGION] != 0:
                 for y in range(N_REGION):
@@ -142,9 +157,8 @@ def RXfill(grRX, pcirc, ncirc):
             points.append([(ncirc[idx_n_max].position*2)+3, y+MID_REGION+P_REGION+VDD_REGION])
         grRX.occupy_points(points)
     
-    grRX.print()
+    #grRX.print()
     
-    pass
 
 
 def createGridTransistors(layerRX, layerCA, layerPoly, col, row, pcirc, ncirc):
@@ -154,5 +168,6 @@ def createGridTransistors(layerRX, layerCA, layerPoly, col, row, pcirc, ncirc):
     grPoly = Grid(layerPoly, col, row)
      
     RXfill(grRX, pcirc, ncirc)
+    POLYfill(grPoly, pcirc, ncirc)
     
     return grRX, grCA, grPoly

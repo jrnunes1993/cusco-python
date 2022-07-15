@@ -111,7 +111,8 @@ def placement(circuit):         # Função que faz o posicionamento de transisto
                 ncirc[int(str(m.eval(nPiecePlacement[i])))].position = i
                 ncirc[int(str(m.eval(nPiecePlacement[i])))].flipped = bool(m.eval(nFlipped[i]))
 
-            
+            pcirc.sort(key=lambda x: x.position, reverse=False)
+            ncirc.sort(key=lambda x: x.position, reverse=False)
 
             return pcirc, ncirc
 
