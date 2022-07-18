@@ -100,21 +100,50 @@ def placement(circuit):         # Função que faz o posicionamento de transisto
             m = s.model()
 
             print('PMOS:')
+            flagAppend = True
+            ppos = []
+            npos = []
             for i in range(pmos_counter):
                 print('pos:' + str(i) + '| piece: ' + str(m.eval(pPiecePlacement[i]+1)) + ' | f: ' + str(m.eval(pFlipped[i])) + ' - |'+str(m.eval(pSource[i]))+ ' ' + str(m.eval(pGate[i])) + ' ' + str(m.eval(pDrain[i]))+'|')
                 pcirc[int(str(m.eval(pPiecePlacement[i])))].position = i
                 pcirc[int(str(m.eval(pPiecePlacement[i])))].flipped = bool(m.eval(pFlipped[i]))
+                if flagAppend:
+                    ppos.append(int(str(m.eval(pSource[i]))))
+                    flagAppend = False
 
+                if int(str(m.eval(pDrain[i]))) == 0:
+                    flagAppend = True
+                    if i == len(pDrain)-1:
+                        ppos.append(int(str(m.eval(pDrain[i]))))
+                else:
+                    ppos.append(int(str(m.eval(pDrain[i]))))
+                    
+            print(ppos)
+            
+            
             print('\nNMOS:')
+            flagAppend = True
             for i in range(nmos_counter):
                 print('pos:' + str(i) + '| piece: ' + str(m.eval(nPiecePlacement[i]+1)) + ' | f: ' + str(m.eval(nFlipped[i])) + ' - |'+str(m.eval(nSource[i]))+ ' ' + str(m.eval(nGate[i])) + ' ' + str(m.eval(nDrain[i]))+'|')
                 ncirc[int(str(m.eval(nPiecePlacement[i])))].position = i
                 ncirc[int(str(m.eval(nPiecePlacement[i])))].flipped = bool(m.eval(nFlipped[i]))
+                if flagAppend:
+                    npos.append(int(str(m.eval(nSource[i]))))
+                    flagAppend = False
+
+                if int(str(m.eval(nDrain[i]))) == 0:
+                    flagAppend = True
+                    if i == len(nDrain)-1:
+                        npos.append(int(str(m.eval(nDrain[i]))))
+                else:
+                    npos.append(int(str(m.eval(nDrain[i]))))
+
+            print(npos)
 
             pcirc.sort(key=lambda x: x.position, reverse=False)
             ncirc.sort(key=lambda x: x.position, reverse=False)
 
-            return pcirc, ncirc
+            return pcirc, ncirc, ppos, npos
 
         else:   # Caso não exista solução, adiciona 1 dispositivo dummy nas redes pmos e nmos, inserindo artificialmente uma quebra de difusão. As quebras são inseridas até que exista uma solução
             pcirc.append(Device(0,0,0,rtype='pmos'))

@@ -1,4 +1,5 @@
 from z3 import *
+from math import floor
 
 N_REGION = 3
 P_REGION = 3
@@ -31,18 +32,15 @@ class Grid:
             self.grid.append(bandwith)
     
    
-    def occupy_points(self, listOfPoints):
+    def occupy_points(self, listOfPoints, value=1):
         for point in listOfPoints:
-            self.occupy_one_point(point[0],point[1])
-
-
+            self.occupy_one_point(point[0],point[1], value)
    
-    def occupy_one_point(self, x, y):
+    def occupy_one_point(self, x, y, value=1):
         
-        self.grid[x][y] = 1
+        self.grid[x][y] = value
         
-
-
+        
     def print(self):
         print('Layer:', self.layer)
         for idx in range(self.y_size):
@@ -96,7 +94,7 @@ def POLYfill(grPOLY, pcirc, ncirc):
         grPOLY.occupy_points(points)
         
             
-    grPOLY.print()
+    #grPOLY.print()
     
     
 
@@ -105,8 +103,7 @@ def RXfill(grRX, pcirc, ncirc):
     #if len(pcirc)!=len(ncirc):
     #    print('Erro estranho kkk')
     #    return
-    p_max_pos = 0
-    n_max_pos = 0
+
     idx_p_max = 0
     idx_n_max = 0
     
@@ -115,8 +112,6 @@ def RXfill(grRX, pcirc, ncirc):
         
         idx_p_max = len(pcirc)-1
         idx_n_max = len(pcirc)-1
-        
-        print(p_max_pos, n_max_pos)
         
         if pcirc[idx].source != 0 and pcirc[idx].drain != 0:
             #ocupa 2*idx+1 e 2*idx+2 para toda p_region
@@ -159,15 +154,35 @@ def RXfill(grRX, pcirc, ncirc):
     
     #grRX.print()
     
-
-
-def createGridTransistors(layerRX, layerCA, layerPoly, col, row, pcirc, ncirc):
+def CAfill(grCA, ppos, npos):
     
-    grRX = Grid(layerRX, col, row)
-    grCA = Grid(layerCA, col, row)
-    grPoly = Grid(layerPoly, col, row)
+    points = []
+    yp = floor(P_REGION/2)
+    yn = floor(N_REGION/2)
+    
+    for idp, pmos in enumerate(ppos):
+        if pmos != 0:
+            points.append([(idp*2)+1, yp+VDD_REGION])
+            grCA.occupy_one_point((idp*2)+1, yp+VDD_REGION, pmos)
+            
+    for idn, nmos in enumerate(npos):
+        if nmos != 0:
+            points.append([(idn*2)+1, yn+MID_REGION+P_REGION+VDD_REGION])
+            grCA.occupy_one_point((idn*2)+1, yn+MID_REGION+P_REGION+VDD_REGION, nmos)
+        
+    
+    grCA.print()
+
+def createGridTransistors(layers, col, row, pcirc, ncirc, ppos, npos):
+    
+    grRX = Grid(layers[0], col, row)
+    grCA = Grid(layers[1], col, row)
+    grPoly = Grid(layers[2], col, row)
      
     RXfill(grRX, pcirc, ncirc)
     POLYfill(grPoly, pcirc, ncirc)
+    CAfill(grCA, ppos, npos)
+    
+    
     
     return grRX, grCA, grPoly

@@ -10,9 +10,9 @@ layers = ['M1', 'CA', 'RX', 'POLY']
 
 
 for item in nets:
-    circuit, nc, pc = [], [], []
+    circuit, pc, nc, ppos, npos = [], [], [], [], []
     circuit = ut.read_netlist(item)
-    pc, nc = pl.placement(circuit)
+    pc, nc, ppos, npos = pl.placement(circuit)
     
     
     for pitem in pc:
@@ -23,9 +23,9 @@ for item in nets:
     col, row = rt.estimateGrid(pc,nc)
         
     print(col, row)
-    grRX, grCA, grPoly = rt.createGridTransistors('RX', 'CA', 'POLY', col, row, pc, nc)
+    grRX, grCA, grPoly = rt.createGridTransistors(['RX', 'CA', 'POLY'], col, row, pc, nc, ppos, npos)
     
-    dr.drawLayers([grRX, grPoly], col, row)
+    dr.drawLayers([grRX, grPoly, grCA], col, row)
     
     print('-----------------------------------------------')
 
