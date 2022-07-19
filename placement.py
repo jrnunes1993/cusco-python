@@ -10,10 +10,10 @@ def placement(circuit):         # Função que faz o posicionamento de transisto
     ncirc = []
 
     for inst in circuit:        # Faz a contagem e separação de transistores 
-        if inst.rtype == 'pmos': 
+        if inst.rtype == 'PMOS': 
             pmos_counter += 1
             pcirc.append(inst)
-        if inst.rtype == 'nmos': 
+        if inst.rtype == 'NMOS': 
             nmos_counter += 1
             ncirc.append(inst)
         #print(inst)
@@ -25,11 +25,11 @@ def placement(circuit):         # Função que faz o posicionamento de transisto
         if pmos_counter>nmos_counter:           # Caso a rede seja desbalanceada, são criados dispositivos "dummy" e inseridos na rede com menos dispositivos
             while pmos_counter>nmos_counter:    
                 nmos_counter +=1                # Se aumenta a contagem de dispositivos da menor rede até que ela tenha o mesmo tamanho da maior
-                ncirc.append(Device(0,0,0,rtype='nmos'))   # A igualdade de dispositivos, com inserção de dummies, é necessária para o alinhamento dos gates posteriormente
+                ncirc.append(Device(0,0,0,0,rtype='NMOS'))   # A igualdade de dispositivos, com inserção de dummies, é necessária para o alinhamento dos gates posteriormente
         else:
             while nmos_counter>pmos_counter:
                 pmos_counter +=1
-                pcirc.append(Device(0,0,0,rtype='pmos'))
+                pcirc.append(Device(0,0,0,0,rtype='PMOS'))
     else:  
         print('Balanced net')
 
@@ -146,8 +146,8 @@ def placement(circuit):         # Função que faz o posicionamento de transisto
             return pcirc, ncirc, ppos, npos
 
         else:   # Caso não exista solução, adiciona 1 dispositivo dummy nas redes pmos e nmos, inserindo artificialmente uma quebra de difusão. As quebras são inseridas até que exista uma solução
-            pcirc.append(Device(0,0,0,rtype='pmos'))
-            ncirc.append(Device(0,0,0,rtype='nmos'))
+            pcirc.append(Device(0,0,0,0,rtype='PMOS'))
+            ncirc.append(Device(0,0,0,0,rtype='NMOS'))
             nmos_counter +=1
             pmos_counter +=1
             spaces_counter +=1

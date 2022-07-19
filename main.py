@@ -5,9 +5,8 @@ import toolutils as ut
 import routing as rt
 import drawing as dr
 
-nets = ["netlist.txt", "new_net.txt", "a.txt"]
+nets = ["netlist.txt", "new_net.txt", "a.txt", 'nor.txt']
 layers = ['M1', 'CA', 'RX', 'POLY']
-
 
 for item in nets:
     circuit, pc, nc, ppos, npos = [], [], [], [], []
@@ -23,6 +22,7 @@ for item in nets:
     col, row = rt.estimateGrid(pc,nc)
         
     print(col, row)
+    
     grRX, grCA, grPoly = rt.createGridTransistors(['RX', 'CA', 'POLY'], col, row, pc, nc, ppos, npos)
     
     dr.drawLayers([grRX, grPoly, grCA], col, row)

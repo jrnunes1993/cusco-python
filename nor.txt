@@ -1,0 +1,4 @@
+MN1 out a gnd NMOS 
+MP2 out a b0 PMOS 
+MN3 b0 b gnd NMOS 
+MP4 b0 b vcc PMOS 

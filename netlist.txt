@@ -1,11 +1,11 @@
-1 8 2 pmos
-1 8 2 pmos
-1 8 2 pmos
-1 9 2 pmos
-1 9 2 pmos
-1 9 2 pmos
-2 8 3 nmos
-3 9 4 nmos
+mp1 1 8 2 pmos
+mp2 1 8 2 pmos
+mp3 1 8 2 pmos
+mp4 1 9 2 pmos
+mp5 1 9 2 pmos
+mp6 1 9 2 pmos
+mn1 2 8 3 nmos
+mn2 3 9 4 nmos
 
 
 

@@ -1,7 +1,9 @@
 #-----------------------------------------------------------------------------------------------------------   
 
 class Device:   # Classe que define o transistor
-    def __init__(self, source = None, gate = None, drain = None, rtype = None, pos = None, flip = None):
+    def __init__(self, name = None, source = None, gate = None, drain = None, rtype = None, pos = None, flip = None):
+        
+        self.name = name
         self.source = source
         self.gate = gate
         self.drain = drain
