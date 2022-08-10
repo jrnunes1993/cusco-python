@@ -223,5 +223,3 @@ def defineNets(grCA):
     
     print(nets)
 
-
-# nets = {1: [[4,2],[4,10]], 2: [[2,3],[7,3],[7,10]]}
