@@ -1,11 +1,8 @@
-mp1 1 8 2 pmos
-mp2 1 8 2 pmos
-mp3 1 8 2 pmos
-mp4 1 9 2 pmos
-mp5 1 9 2 pmos
-mp6 1 9 2 pmos
-mn1 2 8 3 nmos
-mn2 3 9 4 nmos
-
-
-
+mp1 vdd A out pmos
+mp2 vdd A out pmos
+mp3 vdd A out pmos
+mp4 vdd B out pmos
+mp5 vdd B out pmos
+mp6 vdd B out pmos
+mn1 out A n3 nmos
+mn2 n3 B gnd nmos

@@ -50,6 +50,8 @@ class Grid:
         
         return
 
+def SATroute():
+    pass
 
 
 def estimateGrid(listPCirc, listNCirc):
@@ -73,7 +75,7 @@ def estimateGrid(listPCirc, listNCirc):
     
     return count_col, count_row
 
-def POLYfill(grPOLY, pcirc, ncirc):
+def POLYfill(grPOLY, pcirc, ncirc, grCA):
     #if len(pcirc)!=len(ncirc):
     #    print('Erro estranho kkk')
     #    return
@@ -83,18 +85,23 @@ def POLYfill(grPOLY, pcirc, ncirc):
         if ncirc[idx].gate == pcirc[idx].gate and ncirc[idx].gate != 0 and pcirc[idx].gate != 0:
             for y in range(P_REGION+N_REGION+MID_REGION):
                 points.append([(ncirc[idx].position*2)+2, y+VDD_REGION])
+            grPOLY.occupy_points(points, ncirc[idx].gate) 
+            grCA.occupy_one_point((ncirc[idx].position*2)+2, floor((P_REGION+N_REGION+MID_REGION+VDD_REGION)/2)+1, ncirc[idx].gate)
         else:
             if ncirc[idx].gate != 0:
-                for y in range(N_REGION):
-                    points.append([(ncirc[idx].position*2)+2, y+VDD_REGION+P_REGION+MID_REGION])
+                for y in range(N_REGION+2):
+                    points.append([(ncirc[idx].position*2)+2, y+VDD_REGION+P_REGION+MID_REGION-2])
+                grPOLY.occupy_points(points, ncirc[idx].gate)
+                grCA.occupy_one_point((ncirc[idx].position*2)+2, VDD_REGION+P_REGION+MID_REGION-2, ncirc[idx].gate)
+                points = []
             if pcirc[idx].gate != 0:
-                for y in range(P_REGION):
+                for y in range(P_REGION+2):
                     points.append([(pcirc[idx].position*2)+2, y+VDD_REGION])
-            
-        grPOLY.occupy_points(points)
+                grPOLY.occupy_points(points, pcirc[idx].gate)
+                grCA.occupy_one_point((pcirc[idx].position*2)+2, VDD_REGION+P_REGION+1, pcirc[idx].gate)
         
-            
-    #grPOLY.print()
+                 
+    grPOLY.print()
     
     
 
@@ -156,20 +163,23 @@ def RXfill(grRX, pcirc, ncirc):
     
 def CAfill(grCA, ppos, npos):
     
-    points = []
     yp = floor(P_REGION/2)
     yn = floor(N_REGION/2)
     
     for idp, pmos in enumerate(ppos):
         if pmos != 0:
-            points.append([(idp*2)+1, yp+VDD_REGION])
             grCA.occupy_one_point((idp*2)+1, yp+VDD_REGION, pmos)
             
     for idn, nmos in enumerate(npos):
         if nmos != 0:
-            points.append([(idn*2)+1, yn+MID_REGION+P_REGION+VDD_REGION])
             grCA.occupy_one_point((idn*2)+1, yn+MID_REGION+P_REGION+VDD_REGION, nmos)
+            
+    # for idx in range(math.ceil(grCA.x_size/2)-1):
+    #     grCA.occupy_one_point((idx*2)+1, 0, 2)
+    #     grCA.occupy_one_point((idx*2)+1, N_REGION + P_REGION + MID_REGION + VDD_REGION + GND_REGION-1, 1)
         
+    grCA.occupy_one_point(floor(grCA.x_size/2), 0, 2)
+    grCA.occupy_one_point(floor(grCA.x_size/2), N_REGION + P_REGION + MID_REGION + VDD_REGION + GND_REGION-1, 1)
     
     grCA.print()
 
@@ -180,9 +190,38 @@ def createGridTransistors(layers, col, row, pcirc, ncirc, ppos, npos):
     grPoly = Grid(layers[2], col, row)
      
     RXfill(grRX, pcirc, ncirc)
-    POLYfill(grPoly, pcirc, ncirc)
+    POLYfill(grPoly, pcirc, ncirc, grCA)
     CAfill(grCA, ppos, npos)
     
     
     
     return grRX, grCA, grPoly
+
+
+def defineNets(grCA):
+    nets = {}
+    
+    for idx_x in range(grCA.x_size):
+        for idx_y in range(grCA.y_size):
+            if grCA.grid[idx_x][idx_y] != 0:
+                if grCA.grid[idx_x][idx_y] in nets.keys():
+                    nets[grCA.grid[idx_x][idx_y]].append([idx_x, idx_y])
+                else:
+                    nets[grCA.grid[idx_x][idx_y]] = [[idx_x, idx_y]]
+
+    netsToBeRemoved = []
+
+    for key in nets.keys():
+        if len(nets[key]) < 2:
+            if nets[key][0][1] > MID_REGION+P_REGION+VDD_REGION or nets[key][0][1] < P_REGION+VDD_REGION:
+                print(key)
+                grCA.grid[nets[key][0][0]][nets[key][0][1]] = 0
+                netsToBeRemoved.append(key)
+
+    for rm in netsToBeRemoved:
+        nets.pop(rm)
+    
+    print(nets)
+
+
+# nets = {1: [[4,2],[4,10]], 2: [[2,3],[7,3],[7,10]]}
