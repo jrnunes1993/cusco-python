@@ -3,7 +3,7 @@ from math import floor
 
 N_REGION = 3
 P_REGION = 3
-MID_REGION = 5
+MID_REGION = 7
 GND_REGION = 2
 VDD_REGION = 2
 SIDE_REGION = 1
