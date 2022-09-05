@@ -1,4 +1,4 @@
-from tkinter import W
+
 from PIL import Image, ImageDraw, ImageFont
 
 def drawLayers(grlayers, col, row, circDict):
@@ -6,10 +6,12 @@ def drawLayers(grlayers, col, row, circDict):
     w = 35*col
     h = 35*row
     
-   
-       
+    
     img = Image.new("RGB", (w, h))
-    draw = ImageDraw.Draw(img) 
+    draw = ImageDraw.Draw(img)
+   
+     
+    fnt = ImageFont.truetype('arial.ttf', 20)
     
     colorcount = 0
     color = ['green', 'red', 'yellow', 'blue']
@@ -28,7 +30,7 @@ def drawLayers(grlayers, col, row, circDict):
                     shape = [((30*idx_x)+modd[drawMod][0], (30*idx_y)+modd[drawMod][1]), ((30*idx_x)+modd[drawMod][2], (30*idx_y)+modd[drawMod][3])]
                     draw.rectangle(shape, fill = color[colorcount])
                     if(fixedLayers[drawMod] == 'CA'):
-                        draw.text(((30*idx_x)+modd[drawMod][0], (30*idx_y)+modd[drawMod][1]), text = list(circDict.keys())[list(circDict.values()).index(gr.grid[idx_x][idx_y])], fill = 'black')
+                        draw.text(((30*idx_x)+modd[drawMod][0], (30*idx_y)+modd[drawMod][1]), text = list(circDict.keys())[list(circDict.values()).index(gr.grid[idx_x][idx_y])], font=fnt, fill = 'blue')
         
         colorcount = colorcount + 1
         
