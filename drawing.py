@@ -3,8 +3,8 @@ from PIL import Image, ImageDraw
 
 def drawLayers(grlayers, col, row):
        
-    w = 40*col
-    h = 40*row
+    w = 35*col
+    h = 35*row
     
    
        
@@ -14,7 +14,7 @@ def drawLayers(grlayers, col, row):
     colorcount = 0
     color = ['green', 'red', 'yellow', 'blue']
     fixedLayers = ['RX', 'POLY', 'CA']
-    modd = [[0,0,30,30],[10,-10,20,40], [5,5,25,25]]
+    modd = [[0,0,30,30],[5,-10,25,40], [0,0,30,30]]
     
     for gr in grlayers:    
         for i in range(len(fixedLayers)):
