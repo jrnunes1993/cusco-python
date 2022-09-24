@@ -1,3 +1,5 @@
+from multiprocessing import connection
+from numpy import int0
 from z3 import *
 from math import floor
 
@@ -7,8 +9,42 @@ MID_REGION = 10
 GND_REGION = 3
 VDD_REGION = 3
 
+
+class Pin:
+    def __init__(self, x: int, y: int, con_num = None, net = None):
+        self.con_num = con_num
+        self.net = net
+        self.x = x
+        self.y = y
+
+    def __str__(self):
+        return (f"({self.x}, {self.y})")
+
+class Connection:
+    def __init__(self, number: int, pin1: Pin, pin2: Pin):
+        self.number = number
+        self.pin1 = pin1
+        self.pin2 = pin2
+
+    def __str__(self):
+        return (f"Con: {self.number} | Start Pin: {self.pin1} End Pin: {self.pin2}")
+
+
+class Net:
+    def __init__(self, net_number: int, connections: list):
+        self.net_number = net_number
+        self.connections = connections
+    
+    def __str__(self):
+        txt = "Net {}\n".format(self.net_number)
+        for con in self.connections:
+            txt += f"\t {con}\n"
+
+        return txt
+            
+
 class Grid:
-    def __init__(self, layer, x, y):
+    def __init__(self, layer, x: int, y: int):
         self.layer = layer
         grid = []
         self.x_size = x
@@ -48,9 +84,6 @@ class Grid:
             print()
         
         return
-
-def SATroute():
-    pass
 
 
 def estimateGrid(listPCirc, listNCirc):
@@ -203,6 +236,7 @@ def createGridTransistors(layers, col, row, pcirc, ncirc, ppos, npos):
 
 def defineNets(grCA):
     nets = {}
+    netlist = []
     
     for idx_x in range(grCA.x_size):
         for idx_y in range(grCA.y_size):
@@ -223,8 +257,26 @@ def defineNets(grCA):
 
     for rm in netsToBeRemoved:
         nets.pop(rm)
+
+    aux_cons = []
+    con_count = 0
+
+    for n in nets:
+        for idx, ps in enumerate(nets[n]):
+            for i in range(idx+1, len(nets[n])):
+                aux_cons.append(Connection(con_count, Pin(ps[0], ps[1], con_count, n), Pin(nets[n][i][0], nets[n][i][1], con_count, n)))
+                con_count = con_count + 1
+
+        con_count = 0
+        netlist.append(Net(n, aux_cons))
+        aux_cons = []
+    
+    for n in netlist:
+        print(n)
     
     print(nets)
+    return netlist
+
 
 def route(metalLayers, nets, grid_x, grid_y):
     

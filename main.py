@@ -25,6 +25,8 @@ for item in nets:
     
     grRX, grCA, grPoly = rt.createGridTransistors(['RX', 'CA', 'POLY'], col, row, pc, nc, ppos, npos)
     rt.defineNets(grCA)
+    
+    #rt.route()
     dr.drawLayers([grRX, grPoly, grCA], col, row, circDict)
     
     print('-----------------------------------------------')
