@@ -6,8 +6,8 @@ from math import floor
 N_REGION = 3
 P_REGION = 3
 MID_REGION = 10
-GND_REGION = 3
-VDD_REGION = 3
+GND_REGION = 4
+VDD_REGION = 4
 
 
 class Pin:
@@ -41,6 +41,9 @@ class Net:
             txt += f"\t {con}\n"
 
         return txt
+    
+    def getNumOfConnections(self):
+        return len(self.connections)
             
 
 class Grid:
@@ -214,8 +217,8 @@ def CAfill(grCA, ppos, npos):
     #     grCA.occupy_one_point((idx*2)+1, 0, 2)
     #     grCA.occupy_one_point((idx*2)+1, N_REGION + P_REGION + MID_REGION + VDD_REGION + GND_REGION-1, 1)
         
-    grCA.occupy_one_point(floor(grCA.x_size/2), 0, 2)
-    grCA.occupy_one_point(floor(grCA.x_size/2), N_REGION + P_REGION + MID_REGION + VDD_REGION + GND_REGION-1, 1)
+    grCA.occupy_one_point(floor(grCA.x_size/2), 1, 2)
+    grCA.occupy_one_point(floor(grCA.x_size/2), N_REGION + P_REGION + MID_REGION + VDD_REGION + GND_REGION-2, 1)
     
     grCA.print()
 
@@ -235,36 +238,36 @@ def createGridTransistors(layers, col, row, pcirc, ncirc, ppos, npos):
 
 
 def defineNets(grCA):
-    nets = {}
+    pinlist = {}
     netlist = []
     
     for idx_x in range(grCA.x_size):
         for idx_y in range(grCA.y_size):
             if grCA.grid[idx_x][idx_y] != 0:
-                if grCA.grid[idx_x][idx_y] in nets.keys():
-                    nets[grCA.grid[idx_x][idx_y]].append([idx_x, idx_y])
+                if grCA.grid[idx_x][idx_y] in pinlist.keys():
+                    pinlist[grCA.grid[idx_x][idx_y]].append([idx_x, idx_y])
                 else:
-                    nets[grCA.grid[idx_x][idx_y]] = [[idx_x, idx_y]]
+                    pinlist[grCA.grid[idx_x][idx_y]] = [[idx_x, idx_y]]
 
     netsToBeRemoved = []
 
-    for key in nets.keys():
-        if len(nets[key]) < 2:
-            if nets[key][0][1] > MID_REGION+P_REGION+VDD_REGION or nets[key][0][1] < P_REGION+VDD_REGION:
+    for key in pinlist.keys():
+        if len(pinlist[key]) < 2:
+            if pinlist[key][0][1] > MID_REGION+P_REGION+VDD_REGION or pinlist[key][0][1] < P_REGION+VDD_REGION:
                 print(key)
-                grCA.grid[nets[key][0][0]][nets[key][0][1]] = 0
+                grCA.grid[pinlist[key][0][0]][pinlist[key][0][1]] = 0
                 netsToBeRemoved.append(key)
 
     for rm in netsToBeRemoved:
-        nets.pop(rm)
+        pinlist.pop(rm)
 
     aux_cons = []
     con_count = 0
 
-    for n in nets:
-        for idx, ps in enumerate(nets[n]):
-            for i in range(idx+1, len(nets[n])):
-                aux_cons.append(Connection(con_count, Pin(ps[0], ps[1], con_count, n), Pin(nets[n][i][0], nets[n][i][1], con_count, n)))
+    for n in pinlist:
+        for idx, ps in enumerate(pinlist[n]):
+            for i in range(idx+1, len(pinlist[n])):
+                aux_cons.append(Connection(con_count, Pin(ps[0], ps[1], con_count, n), Pin(pinlist[n][i][0], pinlist[n][i][1], con_count, n)))
                 con_count = con_count + 1
 
         con_count = 0
@@ -274,35 +277,58 @@ def defineNets(grCA):
     for n in netlist:
         print(n)
     
-    print(nets)
-    return netlist
+    print(pinlist)
+    return netlist, pinlist
 
 
-def route(metalLayers, nets, grid_x, grid_y):
+def route(metalLayers, nets, pins, grid_x, grid_y):
     
     s = Solver()
     
     num_metal = len(metalLayers)
     metal_grid_3d = [[[Int("s_%i_%i_%i" % (j,i,k)) for j in range (grid_x)] for i in range(grid_y)] for k in range(num_metal)]
-    print(metal_grid_3d)
+    #print(metal_grid_3d)
     
-    for net in nets:
-        print(net, nets[net])
-        for point in nets[net]:
-            print(point[0], point[1])
-            s.add(metal_grid_3d[0][point[1]][point[0]] == net)
+    # for net in nets:
+    #     print(net, nets[net])
+    #     for point in nets[net]:
+    #         print(point[0], point[1])
+    #         s.add(metal_grid_3d[0][point[1]][point[0]] == net)
         
+    net_number = [Int("net_%i" % (n.net_number)) for n in nets]
+    
+    cons_number = sum(int(n.getNumOfConnections()) for n in nets) 
+    
+    for z in range(num_metal):
+        for x in range(grid_x):
+            s.add(metal_grid_3d[z][0][x] == 0)
+            s.add(metal_grid_3d[z][grid_y-1][x] == 0)
+        for y in range(grid_y):
+            s.add(metal_grid_3d[z][y][0] == 0)
+            s.add(metal_grid_3d[z][y][grid_x-1] == 0)
         
+    
+    print(cons_number)   
+    
+    for n in net_number:
+        print(n)     
         
+    for p in pins:
+        for ps in pins[p]:
+                s.add(metal_grid_3d[0][ps[1]][ps[0]] == p)
+                
+                
     if s.check()==sat:
         m = s.model()
         print('OK')
         
-        for i in range(grid_x):
+        for j in range(grid_y):
             l = []
-            for j in range(grid_y):
+            for i in range(grid_x):
                 l.append(m.eval(metal_grid_3d[0][j][i]))
             print(l)
+    else:
+        print('UNSAT')
     
 """ nt = {5: [[1, 3], [11, 3]], 4: [[2, 6], [6, 10]], 2: [[3, 3], [6, 0]], 15: [[3, 13], [11, 13]], 7: [[4, 8]], 8: [[5, 3], [7, 3]], 11: [[5, 13], [9, 3]], 1: [[6, 16], [9, 13]], 13: [[8, 8]], 10: [[10, 8]]}
 route(['m1', 'm2', 'm3'], nt, 25, 20) """
