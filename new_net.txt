@@ -3,8 +3,8 @@ mp2 vdd C n2 pmos
 mp3 n2 D n1 pmos
 mp4 n1 B out pmos
 mp5 n1 E out pmos
-mn1 out A n3 nmos
-mn2 out B n4 nmos
 mn3 n3 C gnd nmos
 mn4 n3 D gnd nmos
 mn5 n4 E gnd nmos
+mn1 out A n3 nmos
+mn2 out B n4 nmos

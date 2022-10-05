@@ -355,7 +355,11 @@ def route(metalLayers, nets, pins, grid_x, grid_y):
     for p in pins:
         if p not in nets_set:
             print(p)
-            s.add(And(metal_grid_3d[0][pins[p][0][1]][pins[p][0][0]] == 0,
+            s.add(And(metal_grid_3d[0][pins[p][0][1]+1][pins[p][0][0]+1] == 0,
+                    metal_grid_3d[0][pins[p][0][1]-1][pins[p][0][0]+1] == 0,
+                    metal_grid_3d[0][pins[p][0][1]+1][pins[p][0][0]-1] == 0,
+                    metal_grid_3d[0][pins[p][0][1]-1][pins[p][0][0]-1] == 0,
+                    metal_grid_3d[0][pins[p][0][1]][pins[p][0][0]] == 0,
                     metal_grid_3d[0][pins[p][0][1]+1][pins[p][0][0]] == 0,
                     metal_grid_3d[0][pins[p][0][1]-1][pins[p][0][0]] == 0,
                     metal_grid_3d[0][pins[p][0][1]][pins[p][0][0]+1] == 0,
@@ -383,6 +387,11 @@ def route(metalLayers, nets, pins, grid_x, grid_y):
                 
                 s.add(metal_grid_3d[0][ps.y][ps.x] == n.net_number)
                 is_pin[ps.y][ps.x] = True
+
+                s.add(Or(metal_grid_3d[0][ps.y+1][ps.x+1] == n.net_number, metal_grid_3d[0][ps.y+1][ps.x+1] == 0))
+                s.add(Or(metal_grid_3d[0][ps.y-1][ps.x+1] == n.net_number, metal_grid_3d[0][ps.y-1][ps.x+1] == 0))
+                s.add(Or(metal_grid_3d[0][ps.y+1][ps.x-1] == n.net_number, metal_grid_3d[0][ps.y+1][ps.x-1] == 0))
+                s.add(Or(metal_grid_3d[0][ps.y-1][ps.x-1] == n.net_number, metal_grid_3d[0][ps.y-1][ps.x-1] == 0))
 
                 ap = And(metal_grid_3d[0][ps.y+1][ps.x] == 0, metal_grid_3d[0][ps.y-1][ps.x] == 0, metal_grid_3d[0][ps.y][ps.x+1] == 0, metal_grid_3d[0][ps.y][ps.x-1] == metal_grid_3d[0][ps.y][ps.x])
                 bp = And(metal_grid_3d[0][ps.y+1][ps.x] == 0, metal_grid_3d[0][ps.y-1][ps.x] == 0, metal_grid_3d[0][ps.y][ps.x+1] == metal_grid_3d[0][ps.y][ps.x], metal_grid_3d[0][ps.y][ps.x-1] == 0)
@@ -489,7 +498,23 @@ def route(metalLayers, nets, pins, grid_x, grid_y):
                 d = And(metal_grid_3d[0][y+1][x] == metal_grid_3d[0][y][x], metal_grid_3d[0][y][x+1] == 0, metal_grid_3d[0][y-1][x] == 0, metal_grid_3d[0][y][x-1] == metal_grid_3d[0][y][x])
                 e = And(metal_grid_3d[0][y+1][x] == 0, metal_grid_3d[0][y][x+1] == metal_grid_3d[0][y][x], metal_grid_3d[0][y-1][x] == 0, metal_grid_3d[0][y][x-1] == metal_grid_3d[0][y][x])
                 f = And(metal_grid_3d[0][y+1][x] == 0, metal_grid_3d[0][y][x+1] == 0, metal_grid_3d[0][y-1][x] == metal_grid_3d[0][y][x], metal_grid_3d[0][y][x-1] == metal_grid_3d[0][y][x])
-        
+         
+                s.add(Implies(metal_grid_3d[0][y][x] != 0,
+                    Or(metal_grid_3d[0][y+1][x+1] == metal_grid_3d[0][y][x], metal_grid_3d[0][y+1][x+1] == 0)
+                ))
+
+                s.add(Implies(metal_grid_3d[0][y][x] != 0,
+                    Or(metal_grid_3d[0][y-1][x+1] == metal_grid_3d[0][y][x], metal_grid_3d[0][y-1][x+1] == 0)
+                ))
+
+                s.add(Implies(metal_grid_3d[0][y][x] != 0,
+                    Or(metal_grid_3d[0][y+1][x-1] == metal_grid_3d[0][y][x], metal_grid_3d[0][y+1][x-1] == 0)
+                ))
+
+                s.add(Implies(metal_grid_3d[0][y][x] != 0,
+                    Or(metal_grid_3d[0][y-1][x-1] == metal_grid_3d[0][y][x], metal_grid_3d[0][y-1][x-1] == 0)
+                ))
+
                 any_val_n = Or(metal_grid_3d[0][y+1][x] == 0, Or([metal_grid_3d[0][y+1][x] == n for n in nets_set]))
                 any_val_e = Or(metal_grid_3d[0][y][x+1] == 0, Or([metal_grid_3d[0][y][x+1] == n for n in nets_set]))
                 any_val_s = Or(metal_grid_3d[0][y-1][x] == 0, Or([metal_grid_3d[0][y-1][x] == n for n in nets_set]))
