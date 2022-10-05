@@ -15,8 +15,8 @@ def drawLayers(grlayers, col, row, circDict):
     
     colorcount = 0
     color = ['green', 'red', 'yellow', 'blue']
-    fixedLayers = ['RX', 'POLY', 'CA']
-    modd = [[0,0,30,30],[5,-10,25,40], [0,0,30,30]]
+    fixedLayers = ['RX', 'POLY', 'CA', 'M1']
+    modd = [[0,0,30,30],[5,-10,25,40], [0,0,30,30], [0,0,30,30]]
     
     
     
@@ -28,10 +28,15 @@ def drawLayers(grlayers, col, row, circDict):
             for idx_y in range(row):
                 if gr.grid[idx_x][idx_y] != 0:
                     shape = [((30*idx_x)+modd[drawMod][0], (30*idx_y)+modd[drawMod][1]), ((30*idx_x)+modd[drawMod][2], (30*idx_y)+modd[drawMod][3])]
+                    
                     draw.rectangle(shape, fill = color[colorcount])
+                    
                     if(fixedLayers[drawMod] == 'CA'):
                         draw.text(((30*idx_x)+modd[drawMod][0], (30*idx_y)+modd[drawMod][1]), text = list(circDict.keys())[list(circDict.values()).index(gr.grid[idx_x][idx_y])], font=fnt, fill = 'blue')
-        
+
+                    if(fixedLayers[drawMod] == 'M1'):
+                        draw.text(((30*idx_x)+modd[drawMod][0], (30*idx_y)+modd[drawMod][1]), text = str(gr.grid[idx_x][idx_y]), font=fnt, fill = 'white')
+
         colorcount = colorcount + 1
         
     

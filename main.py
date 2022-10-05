@@ -6,7 +6,7 @@ import drawing as dr
 
 #nets = ["netlist.txt", "new_net.txt", "nor.txt", 'a.txt']
 #nets = ['somador.txt']
-nets = ['nor.txt']
+nets = ['a.txt']
 layers = ['M1', 'CA', 'RX', 'POLY']
 
 for item in nets:
@@ -28,8 +28,8 @@ for item in nets:
     grRX, grCA, grPoly = rt.createGridTransistors(['RX', 'CA', 'POLY'], col, row, pc, nc, ppos, npos)
     netlist, pinlist = rt.defineNets(grCA)
     
-    rt.route(['M1', 'M2', 'M3'], netlist, pinlist, col, row)
-    dr.drawLayers([grRX, grPoly, grCA], col, row, circDict)
+    grM1 = rt.route(['M1', 'M2', 'M3'], netlist, pinlist, col, row)
+    dr.drawLayers([grRX, grPoly, grCA, grM1], col, row, circDict)
     
     print('-----------------------------------------------')
 
