@@ -6,7 +6,7 @@ import drawing as dr
 
 #nets = ["netlist.txt", "new_net.txt", "nor.txt", 'a.txt']
 #nets = ['somador.txt']
-nets = ['new_net.txt']
+nets = ['nor.txt']
 layers = ['M1', 'CA', 'RX', 'POLY']
 
 for item in nets:
