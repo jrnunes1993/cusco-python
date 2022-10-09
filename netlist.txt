@@ -1,8 +1,6 @@
+mp3 vdd B out pmos
+mp4 vdd B out pmos
 mp1 vdd A out pmos
 mp2 vdd A out pmos
-mp3 vdd A out pmos
-mp4 vdd B out pmos
-mp5 vdd B out pmos
-mp6 vdd B out pmos
-mn1 out A n3 nmos
 mn2 n3 B gnd nmos
+mn1 out A n3 nmos

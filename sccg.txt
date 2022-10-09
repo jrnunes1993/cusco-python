@@ -1,0 +1,10 @@
+mp1 vdd notA net1p pmos
+mp2 net1p notC net2p pmos
+mp3 net1p notD net2p pmos
+mp4 net2p B S pmos
+mp5 net2p E S pmos
+mn1 S notA gnd nmos
+mn2 S notC net1n nmos
+mn3 net1n notD gnd nmos
+mn4 S B net2n nmos
+mn5 net2n E gnd nmos

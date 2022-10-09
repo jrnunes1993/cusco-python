@@ -647,10 +647,7 @@ def route(metalLayers, nets, pins, grid_x, grid_y):
 
     s.add(sum_of_zeros > zeros_optimization)
 
-    for y in range(grid_y):
-        for y in range(grid_y):
-            
-            pass
+
 
     # for n in nets_set:                 
     #     for y in range(1, grid_y-1):    
