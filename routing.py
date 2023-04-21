@@ -310,7 +310,7 @@ def route(metalLayers, nets, pins, grid_x, grid_y):
     grid = createEmptyGrid(grid_x,grid_y)
     met1Grid = Grid('M1', grid_x, grid_y)
     grid = fillPinsInGrid(grid, pins)
-    print(grid)
+    print(np.rot90(grid, k=-1))
     for key, values in pins.items():
         ##Não deve procurar caminhos para pontos isolados
         if(len(values) <= 1):
@@ -327,7 +327,7 @@ def route(metalLayers, nets, pins, grid_x, grid_y):
             applyAStarRouting(grid, met1Grid, key, start, goal)
 
     print("\n\n##################### GRID FINAL ###############################\n")
-    print(grid)
+    print(np.rot90(grid, k=-1))
     return met1Grid
 
 def applyAStarRouting(grid, met1Grid, key, start, goal):
