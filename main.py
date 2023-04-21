@@ -3,11 +3,12 @@ import placement as pl
 import toolutils as ut
 import routing as rt
 import drawing as dr
+import numpy as np
 
 #nets = ["netlist.txt", "new_net.txt", "nor.txt", 'a.txt']
 #nets = ['somador.txt']
-nets = ['somador.txt']
-layers = ['M1', 'CA', 'RX', 'POLY']
+nets = ['a.txt']
+layers = ['M1' , 'CA', 'RX', 'POLY']
 
 for item in nets:
     circuit, circDict, pc, nc, ppos, npos = [], [], [], [], [], []
@@ -26,10 +27,14 @@ for item in nets:
     print(col, row)
     
     grRX, grCA, grPoly = rt.createGridTransistors(['RX', 'CA', 'POLY'], col, row, pc, nc, ppos, npos)
+
     netlist, pinlist = rt.defineNets(grCA)
-    
-    grM1 = rt.route(['M1', 'M2', 'M3'], netlist, pinlist, col, row)
-    dr.drawLayers([grRX, grPoly, grCA, grM1], col, row, circDict)
+    # print('#######################################################')
+    # print('array', netlist)
+    # print('#######################################################')
+    grM1 = rt.route(['M1',], netlist, pinlist, col, row)
+    # dr.drawLayers([grRX, grPoly, grCA, grM1], col, row, circDict)
+    dr.drawLayers([grRX,grPoly,grCA, grM1], col, row, circDict)
     
     print('-----------------------------------------------')
 
