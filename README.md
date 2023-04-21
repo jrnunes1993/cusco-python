@@ -23,11 +23,6 @@ python3 main.pty
 
 ...
 
-```
-
-### NOR Example Result
-![NOR Example Layout Result](https://github.com/jrnunes1993/cusco-python/raw/master/img/nor-example.png)
-
 ##################### GRID FINAL ###############################
 
 [[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
@@ -45,6 +40,9 @@ python3 main.pty
  [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]]
 -----------------------------------------------
 ```
+
+### NOR Example Result
+![NOR Example Layout Result](https://github.com/jrnunes1993/cusco-python/raw/master/img/nor-example.png)
 
 
 Requeriments: 
