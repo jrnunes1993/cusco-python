@@ -49,7 +49,6 @@ class Net:
             
     def getPins(self):
         listOfPins = []
-        
         for c in self.connections:
             if c.pin1 not in listOfPins:
                 listOfPins.append(c.pin1)
@@ -310,7 +309,11 @@ def route(metalLayers, nets, pins, grid_x, grid_y):
     grid = createEmptyGrid(grid_x,grid_y)
     met1Grid = Grid('M1', grid_x, grid_y)
     grid = fillPinsInGrid(grid, pins)
-    print(np.rot90(grid, k=-1))
+    np.set_printoptions(threshold=sys.maxsize)
+    print("\n\n##################### GRID COM PINOS ###############################\n")
+    print(np.fliplr(np.rot90(grid, k=-1)))
+    pins = dict(sorted(pins.items(), key=lambda x: len(x[1])))
+
     for key, values in pins.items():
         ##Não deve procurar caminhos para pontos isolados
         if(len(values) <= 1):
@@ -320,14 +323,17 @@ def route(metalLayers, nets, pins, grid_x, grid_y):
         goal = tuple(values[1])
 
 
-        applyAStarRouting(grid, met1Grid, key, start, goal)
-        if(len(values) == 3):
-            start = tuple(values[1])
-            goal = tuple(values[2])
-            applyAStarRouting(grid, met1Grid, key, start, goal)
+        values = sorted(values, key=lambda point: heuristic(point, values[0]))
+
+        grid, met1Grid = applyAStarRouting(grid, met1Grid, key, start, goal)
+        if(len(values) > 2):
+            for i in range(1, len(values)-1):
+                start = tuple(values[i])
+                goal = tuple(values[i+1])
+                grid, met1Grid = applyAStarRouting(grid, met1Grid, key, start, goal)
 
     print("\n\n##################### GRID FINAL ###############################\n")
-    print(np.rot90(grid, k=-1))
+    print(np.fliplr(np.rot90(grid, k=-1)))
     return met1Grid
 
 def applyAStarRouting(grid, met1Grid, key, start, goal):
@@ -342,6 +348,7 @@ def applyAStarRouting(grid, met1Grid, key, start, goal):
     for point in path:
         grid[point] = key
         met1Grid.occupy_one_point(point[0], point[1],key)
+    return grid, met1Grid
     
 
 def astar(start, goal, graph, heuristic):
@@ -360,7 +367,10 @@ def astar(start, goal, graph, heuristic):
             x, y = current_node[0] + dx, current_node[1] + dy
             if 0 <= x < graph.shape[0] and 0 <= y < graph.shape[1]:
                 neighbor = (x, y)
-                cost = graph[x][y]
+                if graph[x][y] != 0:
+                    cost = 10000
+                else:
+                    cost = 1
                 new_cost = cost_so_far[current_node] + cost
                 if neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]:
                     cost_so_far[neighbor] = new_cost
@@ -382,9 +392,6 @@ def routea(metalLayers, nets, pins, grid_x, grid_y):
     
     num_metal = len(metalLayers)
     metal_grid_3d = [[[Int("s_%i_%i_%i" % (j,i,k)) for j in range (grid_x)] for i in range(grid_y)] for k in range(num_metal)]
-    print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
-    print(grid_x, grid_y, pins)
-    print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
     
     nets_set = set([n.net_number for n in nets])
     net_number = []
